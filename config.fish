@@ -12,7 +12,9 @@ function git-init --argument git_url
   git add .
   git commit -m "Initial Commit"
   git branch -M main
+  if test -n "&git_url"
     echo $git_url
+  end
   #git remote add origin $argv
   #git push -u origin main
 end
