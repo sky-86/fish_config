@@ -6,6 +6,12 @@ function fish_user_key_bindings
   fish_default_key_bindings
 end
 
+# source without providing a path
+function source-me
+  echo "$HOME/.config/fish/config.fish"
+  source "$HOME/.config/fish/config.fish"
+end
+
 # must supply a remote url
 function git-init --argument git_url
   if echo $git_url | grep -q "git"
