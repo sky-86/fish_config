@@ -7,13 +7,14 @@ function fish_user_key_bindings
 end
 
 # must supply a remote url
-function git-init
+function git-init --argument git_url
   git init
   git add .
   git commit -m "Initial Commit"
   git branch -M main
-  if test -d "$argv[1]"
-		echo "$argv[1]"
+  if $git_url
+    echo $git_url
+  end
   #git remote add origin $argv
   #git push -u origin main
 end
