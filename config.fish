@@ -8,7 +8,7 @@ end
 
 # must supply a remote url
 function git-init --argument git_url
-  if test -n "&git_url"
+  if echo $git_url | grep -q "git"
     echo $git_url
     git init
     git add .
