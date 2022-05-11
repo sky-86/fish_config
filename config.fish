@@ -14,9 +14,11 @@ function git-init --argument git_url
   git branch -M main
   if test -n "&git_url"
     echo $git_url
+    git remote add origin $argv
+    git push -u origin main
+  else
+    echo "Please provide a github repo url"
   end
-  #git remote add origin $argv
-  #git push -u origin main
 end
 
 ### VARIOUS functions from https://github.com/razzius/fish-functions
