@@ -2,14 +2,28 @@ set fish_greeting
 set TERM "xterm-256color"
 
 function fish_user_key_bindings
-  ### fish_vi_key_bindings
-  fish_default_key_bindings
+  fish_vi_key_bindings
+##fish_default_key_bindings
 end
 
 # source without providing a path
-function source-me
-  echo "$HOME/.config/fish/config.fish"
+function source-fish
   source "$HOME/.config/fish/config.fish"
+  echo "Sourced: $HOME/.config/fish/config.fish"
+end
+
+# easily edit fish config
+function edit-fish-config 
+  nvim "$HOME/.config/fish/config.fish"
+  source-fish
+end
+
+function edit-vim-config
+  nvim "$HOME/.config/nvim/init.vim"
+end
+
+function help-vim
+  nvim "$HOME/Documents/Notes/vim_notes"
 end
 
 # must supply a remote url
@@ -38,17 +52,70 @@ function restore --argument file
     mv $file (echo $file | sed s/.bak//)
 end
 
-# a better copy command
-function copy
-    set count (count $argv | tr -d \n)
-    if test "$count" = 2; and test -d "$argv[1]"
-        set from (echo $argv[1] | trim-right /)
-        set to (echo $argv[2])
-        command cp -i -r $from $to
+# same idea as backup but for swap Cargo.toml files
+function swap-cargo -a new old
+    if test -e "./Cargo.toml"
+        mv "Cargo.toml" "Cargo.toml."$new
+
+        if not test -e "./Cargo.toml"
+            mv "Cargo.toml."$old "Cargo.toml"
+        else
+            echo ERROR Cargo.toml.$old does not exist
+        end
     else
-        command cp -i $argv
+        echo ERROR Cargo.toml does not exist
     end
 end
+
+function cargo-swap -a new
+    ### checks if $new is not blank
+    if test -z $new
+        echo Please provide an extension
+        return
+    end
+
+    ### and if it exists
+    if test -e Cargo.toml.$new 
+        echo The provdied extension already exists
+        return
+    end
+
+    ### Checks if cargo.toml exists
+    if test -e Cargo.toml
+        set -f newfile Cargo.toml.$new
+
+        ### only one cargo swap, so can auto swap
+        if test (count Cargo.toml.*) -eq 1
+            set -f oldfile (find Cargo.toml.*)
+
+        ### Need to ask user for swap file
+        else
+            echo Multiple swap files, please specify extension:
+            set -f in temp
+
+            ### while user input is not blank
+            while test -n $in;
+                echo Please specify a file extension:;
+                read -f in
+                if test -e Cargo.toml.$in
+                    set -f oldfile Cargo.toml.$in
+                    break
+               end
+            end
+        end
+        mv Cargo.toml $newfile
+        echo Moved Cargo.toml to $newfile
+
+        mv $oldfile Cargo.toml
+        echo Moved $oldfile to Cargo.toml
+    end
+end
+
+
+function test-fish
+end
+
+
 
 function move
     mv -i $argv
@@ -171,10 +238,10 @@ end
 
 abbr -a rm remove
 abbr -a mv move
-abbr -a cp copy
 abbr -a gc git-commit
 abbr -a gi git-init
 
+alias note="eureka"
 alias vim="nvim"
 alias ls="exa"
 alias emacs="emacsclient -c -a 'emacs'"
